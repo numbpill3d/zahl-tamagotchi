@@ -141,6 +141,57 @@ document.querySelector('.screen-overlay').addEventListener('click', function (e)
   saveState();
 });
 
+// ── ambient ember particles drifting up off the shell — replaces the
+// earlier drop-shadow glow, which looked wrong against this silhouette ──
+var particleCanvas = document.getElementById('particleCanvas');
+var pctx = particleCanvas.getContext('2d');
+var particles = [];
+var lastParticleSpawn = 0;
+
+function spawnParticle(intensity) {
+  var purple = Math.random() < 0.4;
+  particles.push({
+    x: Math.random() * particleCanvas.width,
+    y: particleCanvas.height * (0.12 + Math.random() * 0.82),
+    vx: (Math.random() - 0.5) * 0.2,
+    vy: -(0.12 + Math.random() * 0.22) * intensity,
+    life: 0,
+    maxLife: 240 + Math.random() * 200,
+    size: 0.8 + Math.random() * 1.3,
+    color: purple ? [180, 90, 230] : [255, 100, 50],
+  });
+}
+
+function tickParticles() {
+  var intensity = state.feralMode ? 2.4 : (state.hunger < 20 ? 1.7 : 1);
+  var spawnInterval = state.feralMode ? 160 : 550;
+  var now = performance.now();
+  if (now - lastParticleSpawn > spawnInterval) {
+    lastParticleSpawn = now;
+    spawnParticle(intensity);
+  }
+  pctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+  particles = particles.filter(function (p) {
+    p.life++;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx += (Math.random() - 0.5) * 0.015;
+    if (p.life >= p.maxLife) return false;
+    var t = p.life / p.maxLife;
+    var alpha = Math.sin(t * Math.PI) * 0.5;
+    var c = p.color;
+    pctx.shadowColor = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (alpha * 0.8) + ')';
+    pctx.shadowBlur = 3;
+    pctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + alpha + ')';
+    pctx.beginPath();
+    pctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    pctx.fill();
+    return true;
+  });
+  requestAnimationFrame(tickParticles);
+}
+requestAnimationFrame(tickParticles);
+
 // ── ambient soul trickle — this is a companion, not a clicker; souls
 // accrue passively so rituals stay usable without a click-the-orb loop ──
 var nextAmbientSoulAt = Date.now() + 60000 + Math.random() * 60000;
