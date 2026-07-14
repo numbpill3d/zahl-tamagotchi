@@ -7,60 +7,24 @@
 </head>
 <body>
 <div class="shell" id="shell">
-  <div class="shell-ring"></div>
-  <div class="shell-face">
+  <img class="shell-art" src="assets/shell.png" alt="">
 
-    <div class="rivet rivet-tl"></div>
-    <div class="rivet rivet-tr"></div>
-    <div class="rivet rivet-bl"></div>
-    <div class="rivet rivet-br"></div>
-
-    <div class="crack crack-1"></div>
-    <div class="crack crack-2"></div>
-    <div class="crack crack-3"></div>
-
-    <button class="close-btn" id="closeBtn" title="close">&#10005;</button>
-    <div class="brand">Z A H L</div>
-
-    <div class="rune rune-l"></div>
-    <div class="rune rune-r"></div>
-
-    <div class="screen-bezel">
-      <div class="screen">
-        <canvas id="zahlCanvas" width="64" height="64"></canvas>
-        <div class="scanlines"></div>
-
-        <div class="icon-row" id="iconRow">
-          <div class="icon" data-icon="feed"><span>FD</span></div>
-          <div class="icon" data-icon="pet"><span>PT</span></div>
-          <div class="icon" data-icon="ritual"><span>RT</span></div>
-          <div class="icon" data-icon="stats"><span>ST</span></div>
-        </div>
-
-        <div class="hud">
-          <span id="hudMood">HUNGRY</span>
-          <span id="hudLevel">LV 1</span>
-        </div>
-
-        <div class="submenu" id="submenu"></div>
-      </div>
+  <div class="screen-overlay">
+    <canvas id="zahlCanvas" width="64" height="64"></canvas>
+    <div class="scanlines"></div>
+    <div class="hud">
+      <span id="hudMood">HUNGRY</span>
+      <span id="hudLevel">LV 1</span>
     </div>
-
-    <div class="soul-readout">
-      <span class="sr-label">SOULS</span>
-      <span id="soulVal">0</span>
-    </div>
-
-    <div class="grille grille-l"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="grille grille-r"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-
-    <div class="buttons">
-      <button class="dbtn" id="btnA"><span class="glyph">&#987;</span><span class="lbl">MENU</span></button>
-      <button class="dbtn" id="btnB"><span class="glyph">&#937;</span><span class="lbl">SELECT</span></button>
-      <button class="dbtn" id="btnC"><span class="glyph">&#8224;</span><span class="lbl">BACK</span></button>
-    </div>
-
+    <div class="submenu" id="submenu"></div>
   </div>
+
+  <!-- invisible hotspots mapped onto the gems already sculpted into the shell art -->
+  <div class="hotspot hs-close" id="hsClose" title="close"></div>
+  <div class="hotspot hs-feed" id="hsFeed" title="feed"></div>
+  <div class="hotspot hs-pet" id="hsPet" title="pet"></div>
+  <div class="hotspot hs-ritual" id="hsRitual" title="rituals"></div>
+  <div class="hotspot hs-stats" id="hsStats" title="stats"></div>
 </div>
 
 <script src="core/zahl-core.js"></script>

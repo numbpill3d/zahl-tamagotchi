@@ -2,227 +2,66 @@
 
 html, body {
   width: 340px;
-  height: 620px;
+  height: 750px;
   background: transparent;
   overflow: hidden;
   font-family: 'Courier New', monospace;
 }
 
 .shell {
-  width: 340px;
-  height: 620px;
-  -webkit-app-region: drag;
   position: relative;
+  width: 340px;
+  height: 750px;
+  -webkit-app-region: drag;
+}
+
+.shell-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 0 16px rgba(190,40,60,0.35)) drop-shadow(0 0 34px rgba(120,20,40,0.2));
+  animation: shellBreathe 5s ease-in-out infinite;
 }
 
 @keyframes shellBreathe {
-  0%, 100% {
-    box-shadow:
-      0 0 46px rgba(200,0,20,0.35),
-      inset 0 0 70px rgba(120,0,10,0.28),
-      inset 0 0 2px rgba(255,60,60,0.4);
-  }
-  50% {
-    box-shadow:
-      0 0 58px rgba(200,0,20,0.48),
-      inset 0 0 76px rgba(120,0,10,0.36),
-      inset 0 0 3px rgba(255,80,80,0.5);
-  }
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(190,40,60,0.35)) drop-shadow(0 0 34px rgba(120,20,40,0.2)); }
+  50%      { filter: drop-shadow(0 0 22px rgba(200,50,70,0.48)) drop-shadow(0 0 42px rgba(140,30,50,0.28)); }
 }
 
-.shell-face {
-  width: 100%;
-  height: 100%;
-  clip-path: polygon(50% 0%, 82% 6%, 100% 24%, 100% 74%, 82% 94%, 50% 100%, 18% 94%, 0% 74%, 0% 24%, 18% 6%);
-  background:
-    radial-gradient(circle at 50% 30%, rgba(120,0,10,0.18), transparent 55%),
-    linear-gradient(160deg, #200005 0%, #0a0002 55%, #000000 100%);
-  border: 3px solid #4a0009;
-  animation: shellBreathe 5s ease-in-out infinite;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 168px;
-  padding-bottom: 34px;
-  gap: 14px;
-  overflow: hidden;
-}
-
-/* glossy plastic highlight — clipped to the shell shape along with everything else */
-.shell-face::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(135deg, rgba(255,180,190,0.08) 0%, transparent 26%, transparent 68%, rgba(0,0,0,0.3) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* drifting ash motes across the shell surface, echoes the browser build's ash-storm */
-.shell-face::after {
-  content: '';
-  position: absolute;
-  top: -20%; left: -20%; width: 140%; height: 140%;
-  background-image: radial-gradient(circle, rgba(255,50,70,0.4) 1px, transparent 1px);
-  background-size: 20px 20px;
-  opacity: 0.16;
-  animation: shellAsh 34s linear infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-@keyframes shellAsh { 0% { background-position: 0 0; } 100% { background-position: 100px 160px; } }
-
-/* keychain loop — a sibling, not clipped by the shell polygon, so it can
-   sit right at the tapering top point like a hoop cast onto the shell */
-.shell-ring {
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 5px solid #4a0009;
-  background: radial-gradient(circle at 35% 30%, #6a0010, #140002 70%);
-  box-shadow: 0 0 10px rgba(200,0,20,0.5), inset 0 0 4px rgba(0,0,0,0.85);
-  z-index: 0;
-}
-
-/* rivets at the facet seams — small cast bolts, sells the "device" feel */
-.rivet {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #b03848, #3a0008 70%);
-  box-shadow: 0 0 4px rgba(255,50,70,0.55), inset 0 0 2px rgba(0,0,0,0.7);
-  z-index: 2;
-}
-.rivet-tl { top: 46px; left: 60px; }
-.rivet-tr { top: 46px; right: 60px; }
-.rivet-bl { bottom: 96px; left: 40px; }
-.rivet-br { bottom: 96px; right: 40px; }
-
-/* hairline corrosion cracks etched into the shell */
-.crack {
-  position: absolute;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,50,70,0.5), transparent);
-  filter: drop-shadow(0 0 2px rgba(255,30,50,0.45));
-  z-index: 2;
-}
-.crack-1 { top: 205px; left: 26px; width: 54px; transform: rotate(22deg); }
-.crack-2 { top: 340px; right: 18px; width: 42px; transform: rotate(-16deg); }
-.crack-3 { bottom: 150px; left: 22px; width: 36px; transform: rotate(-30deg); }
-
-/* speaker grille flanking the button row */
-.grille {
-  position: absolute;
-  bottom: 46px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3px;
-  z-index: 2;
-}
-.grille-l { left: 30px; }
-.grille-r { right: 30px; }
-.grille span {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #3a0008;
-  box-shadow: inset 0 0 2px rgba(0,0,0,0.8), 0 0 1px rgba(255,40,60,0.3);
-}
-
-/* mood-reactive shell glow, toggled from renderer.js */
-.shell.feral .shell-face {
+.shell.feral .shell-art {
   animation: shellFeralPulse 0.55s ease-in-out infinite;
-  border-color: #8a0010;
 }
 @keyframes shellFeralPulse {
-  0%, 100% {
-    box-shadow: 0 0 46px rgba(200,0,20,0.4), inset 0 0 70px rgba(120,0,10,0.3), inset 0 0 2px rgba(255,60,60,0.45);
-  }
-  50% {
-    box-shadow: 0 0 78px rgba(255,10,20,0.85), inset 0 0 96px rgba(200,0,10,0.55), inset 0 0 5px rgba(255,100,100,0.8);
-  }
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(220,10,20,0.55)) drop-shadow(0 0 36px rgba(160,0,10,0.35)); }
+  50%      { filter: drop-shadow(0 0 34px rgba(255,10,20,0.9)) drop-shadow(0 0 60px rgba(200,0,10,0.55)); }
 }
-.shell.starving .shell-face {
+
+.shell.starving .shell-art {
   animation: none;
-  box-shadow: 0 0 58px rgba(230,70,0,0.55), inset 0 0 76px rgba(150,20,0,0.34), inset 0 0 2px rgba(255,130,60,0.5);
+  filter: drop-shadow(0 0 22px rgba(230,90,0,0.55)) drop-shadow(0 0 40px rgba(160,40,0,0.3));
 }
 
-.close-btn {
-  -webkit-app-region: no-drag;
+/* ── screen viewport, positioned over the white LCD cutout in the art ── */
+.screen-overlay {
   position: absolute;
-  top: 150px;
-  right: 26px;
-  width: 20px;
-  height: 20px;
-  background: #180004;
-  color: #a02030;
-  border: 1px solid #5a0010;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 5;
-}
-.close-btn:hover { color: #ff4060; border-color: #ff2040; box-shadow: 0 0 8px rgba(255,32,64,0.5); }
-
-.brand {
-  position: relative;
-  z-index: 3;
-  color: #b02030;
-  font-weight: bold;
-  font-size: 15px;
-  letter-spacing: 6px;
-  text-shadow: 0 0 10px #ff2040, 0 0 2px #ffb0b0;
-}
-
-.rune {
-  position: absolute;
-  z-index: 3;
-  top: 158px;
-  width: 8px;
-  height: 8px;
-  background: #7a0014;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  box-shadow: 0 0 6px #ff2040;
-  opacity: 0.8;
-}
-.rune-l { left: 54px; }
-.rune-r { right: 54px; }
-
-.screen-bezel {
-  -webkit-app-region: no-drag;
-  position: relative;
-  z-index: 3;
-  width: 260px;
-  height: 250px;
-  background: #0a0003;
-  border: 4px solid #3a0008;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 14px rgba(180,0,20,0.3);
-  padding: 10px;
-}
-
-.screen {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  left: 29.98%;
+  top: 53.16%;
+  width: 42.10%;
+  height: 16.95%;
   background: #050208;
-  border: 1px solid #2a0006;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 6px;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
 }
 
 #zahlCanvas {
-  width: 168px;
-  height: 168px;
+  width: auto;
+  height: 76%;
+  aspect-ratio: 1 / 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   flex-shrink: 0;
@@ -237,42 +76,15 @@ html, body {
   z-index: 3;
 }
 
-.icon-row {
-  display: flex;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.icon {
-  width: 34px;
-  height: 18px;
-  border: 1px solid #3a0008;
-  background: #100004;
-  color: #6a1420;
-  font-size: 9px;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-}
-
-.icon.selected {
-  border-color: #ff2040;
-  color: #ff6070;
-  background: #2a0008;
-  box-shadow: 0 0 8px rgba(255,32,64,0.6);
-}
-
 .hud {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 4px 6px;
+  padding: 2px 8%;
   font-size: 9px;
   color: #a02030;
   letter-spacing: 1px;
-  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .submenu {
@@ -304,55 +116,36 @@ html, body {
   justify-content: space-between;
   padding: 4px 2px;
   border-bottom: 1px solid #1a0004;
+  cursor: pointer;
 }
-
-.sm-row.selected {
-  background: #2a0008;
-  color: #ff8090;
-  box-shadow: inset 0 0 6px rgba(255,32,64,0.35);
-}
-
+.sm-row:hover { background: #200006; }
 .sm-row .sm-name { flex: 1; }
 .sm-row .sm-meta { color: #6a1420; font-size: 9px; }
 
-.soul-readout {
+/* ── hotspots mapped onto the gems already sculpted into the art —
+   invisible at rest, a faint ring on hover is the only affordance,
+   so the shell reads as pure sculpture until you reach for it ── */
+.hotspot {
+  position: absolute;
+  width: 9%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
   -webkit-app-region: no-drag;
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  color: #d05070;
-}
-.sr-label { font-size: 9px; letter-spacing: 2px; color: #6a1420; }
-#soulVal { font-size: 18px; font-weight: bold; text-shadow: 0 0 8px #ff2040; }
-
-.buttons {
-  -webkit-app-region: no-drag;
-  position: relative;
-  z-index: 3;
-  display: flex;
-  gap: 18px;
-}
-
-.dbtn {
-  width: 54px;
-  height: 54px;
-  border-radius: 0;
-  background: radial-gradient(circle at 35% 30%, #2a0008, #0d0002 70%);
-  border: 2px solid #4a0009;
-  color: #a02030;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  transition: all 0.12s;
+  z-index: 3;
+  background: transparent;
+  box-shadow: none;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
 }
+.hotspot:hover {
+  background: rgba(255,255,255,0.10);
+  box-shadow: 0 0 12px rgba(255,255,255,0.3), inset 0 0 6px rgba(255,255,255,0.2);
+}
+.hotspot:active { background: rgba(255,255,255,0.2); }
 
-.dbtn .glyph { font-size: 16px; text-shadow: 0 0 6px #ff2040; }
-.dbtn .lbl { font-size: 7px; letter-spacing: 1px; color: #6a1420; }
-
-.dbtn:hover { border-color: #ff2040; box-shadow: 0 0 12px rgba(255,32,64,0.5); }
-.dbtn:active { transform: scale(0.92); background: radial-gradient(circle at 35% 30%, #4a0010, #1a0004 70%); }
+.hs-close  { left: 16.84%; top: 68.53%; }
+.hs-feed   { left: 26.69%; top: 75.70%; }
+.hs-pet    { left: 43.53%; top: 78.96%; }
+.hs-ritual { left: 58.93%; top: 78.96%; }
+.hs-stats  { left: 79.47%; top: 75.70%; }

@@ -40,36 +40,43 @@ var canvas = document.getElementById('zahlCanvas');
 var renderer = ZahlRender.create(canvas);
 renderer.start();
 
-// ── 3-button tamagotchi nav ────────────────────────────────────────────
-var ICONS = ['feed', 'pet', 'ritual', 'stats'];
-var uiMode = 'idle'; // idle | menu | ritual | stats
-var menuIndex = 0;
-var ritualIndex = 0;
-
-var iconEls = Array.prototype.slice.call(document.querySelectorAll('.icon'));
+// ── gem hotspots — direct-select, no cycling menu. Each gem sculpted
+// into the shell art is one action; RITUAL and STATS open a small
+// readout over the screen instead of navigating away from it. ────────
+var uiMode = 'idle'; // idle | ritual | stats
 var submenuEl = document.getElementById('submenu');
 
 function flashScreen() {
-  var screen = document.querySelector('.screen');
+  var screen = document.querySelector('.screen-overlay');
   screen.style.filter = 'brightness(1.6)';
   setTimeout(function () { screen.style.filter = ''; }, 120);
-}
-
-function refreshIcons() {
-  iconEls.forEach(function (el, i) {
-    el.classList.toggle('selected', uiMode === 'menu' && i === menuIndex);
-  });
 }
 
 function renderRitualSubmenu() {
   var html = '<h4>RITUALS</h4>';
   ZahlCore.RITUAL_NAMES.forEach(function (name, i) {
     var cost = ZahlCore.RITUAL_COSTS[i];
-    var sel = i === ritualIndex ? ' selected' : '';
     var afford = state.soulBalance >= cost ? '' : ' (need more)';
-    html += '<div class="sm-row' + sel + '"><span class="sm-name">' + name + '</span><span class="sm-meta">' + cost + afford + '</span></div>';
+    html += '<div class="sm-row" data-ritual="' + i + '"><span class="sm-name">' + name + '</span><span class="sm-meta">' + cost + afford + '</span></div>';
   });
   submenuEl.innerHTML = html;
+  submenuEl.querySelectorAll('.sm-row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      var type = parseInt(row.dataset.ritual, 10);
+      var ok = ZahlCore.performRitual(state, type, Date.now());
+      if (ok) {
+        renderer.trigger('ritual');
+        var hint = ZahlCore.ritualEffectHint(type);
+        if (hint.ghost) renderer.trigger('ghost');
+        flashScreen();
+        closeSubmenu();
+        saveState();
+      } else {
+        row.style.color = '#ff2040';
+        setTimeout(function () { row.style.color = ''; }, 400);
+      }
+    });
+  });
 }
 
 function renderStatsSubmenu() {
@@ -84,73 +91,48 @@ function renderStatsSubmenu() {
     '<div class="sm-row"><span class="sm-name">SOULS TOTAL</span><span class="sm-meta">' + state.soulsTotal + '</span></div>';
 }
 
-function refreshUiMode() {
-  refreshIcons();
-  submenuEl.classList.toggle('visible', uiMode === 'ritual' || uiMode === 'stats');
-  if (uiMode === 'ritual') renderRitualSubmenu();
-  if (uiMode === 'stats') renderStatsSubmenu();
+function openSubmenu(mode) {
+  uiMode = mode;
+  submenuEl.classList.add('visible');
+  if (mode === 'ritual') renderRitualSubmenu();
+  if (mode === 'stats') renderStatsSubmenu();
 }
 
-function pressA() {
-  if (uiMode === 'idle') { uiMode = 'menu'; menuIndex = 0; }
-  else if (uiMode === 'menu') { menuIndex = (menuIndex + 1) % ICONS.length; }
-  else if (uiMode === 'ritual') { ritualIndex = (ritualIndex + 1) % ZahlCore.RITUAL_NAMES.length; }
-  refreshUiMode();
+function closeSubmenu() {
+  uiMode = 'idle';
+  submenuEl.classList.remove('visible');
 }
 
-function pressB() {
-  if (uiMode === 'idle') return;
-  if (uiMode === 'menu') {
-    var picked = ICONS[menuIndex];
-    if (picked === 'feed') {
-      ZahlCore.feed(state, 25, Date.now());
-      renderer.trigger('fed');
-      flashScreen();
-      uiMode = 'idle';
-    } else if (picked === 'pet') {
-      ZahlCore.pet(state);
-      renderer.trigger('petted');
-      flashScreen();
-      uiMode = 'idle';
-    } else if (picked === 'ritual') {
-      uiMode = 'ritual';
-      ritualIndex = 0;
-    } else if (picked === 'stats') {
-      uiMode = 'stats';
-    }
-    saveState();
-  } else if (uiMode === 'ritual') {
-    var ok = ZahlCore.performRitual(state, ritualIndex, Date.now());
-    if (ok) {
-      renderer.trigger('ritual');
-      var hint = ZahlCore.ritualEffectHint(ritualIndex);
-      if (hint.ghost) renderer.trigger('ghost');
-      flashScreen();
-      uiMode = 'idle';
-      saveState();
-    } else {
-      var rows = submenuEl.querySelectorAll('.sm-row');
-      if (rows[ritualIndex]) {
-        rows[ritualIndex].style.color = '#ff2040';
-        setTimeout(function () { rows[ritualIndex].style.color = ''; }, 400);
-      }
-    }
-  }
-  refreshUiMode();
+function toggleSubmenu(mode) {
+  if (uiMode === mode) closeSubmenu();
+  else openSubmenu(mode);
 }
 
-function pressC() {
-  if (uiMode === 'ritual' || uiMode === 'stats') uiMode = 'menu';
-  else if (uiMode === 'menu') uiMode = 'idle';
-  refreshUiMode();
-}
+document.getElementById('hsFeed').addEventListener('click', function () {
+  ZahlCore.feed(state, 25, Date.now());
+  renderer.trigger('fed');
+  flashScreen();
+  saveState();
+});
 
-document.getElementById('btnA').addEventListener('click', pressA);
-document.getElementById('btnB').addEventListener('click', pressB);
-document.getElementById('btnC').addEventListener('click', pressC);
+document.getElementById('hsPet').addEventListener('click', function () {
+  ZahlCore.pet(state);
+  renderer.trigger('petted');
+  flashScreen();
+  saveState();
+});
+
+document.getElementById('hsRitual').addEventListener('click', function () { toggleSubmenu('ritual'); });
+document.getElementById('hsStats').addEventListener('click', function () { toggleSubmenu('stats'); });
+
+document.getElementById('hsClose').addEventListener('click', function () {
+  saveState();
+  if (ipcRenderer) ipcRenderer.send('quit-app');
+  else window.close();
+});
 
 // tap the screen itself while idle = quick pet, tamagotchi-poke style
-document.querySelector('.screen').addEventListener('click', function (e) {
+document.querySelector('.screen-overlay').addEventListener('click', function (e) {
   if (e.target.closest('.submenu')) return;
   if (uiMode !== 'idle') return;
   ZahlCore.pet(state);
@@ -159,22 +141,15 @@ document.querySelector('.screen').addEventListener('click', function (e) {
   saveState();
 });
 
-document.getElementById('closeBtn').addEventListener('click', function () {
-  saveState();
-  if (ipcRenderer) ipcRenderer.send('quit-app');
-  else window.close();
-});
-
 // ── ambient soul trickle — this is a companion, not a clicker; souls
 // accrue passively so rituals stay usable without a click-the-orb loop ──
 var nextAmbientSoulAt = Date.now() + 60000 + Math.random() * 60000;
 
 function maybeAmbientSoul(now) {
   if (now < nextAmbientSoulAt) return;
-  var result = ZahlCore.catchSoul(state, now);
+  ZahlCore.catchSoul(state, now);
   renderer.trigger('soulcap');
   nextAmbientSoulAt = now + 60000 + Math.random() * 120000;
-  return result;
 }
 
 // ── main loop ───────────────────────────────────────────────────────────
@@ -196,7 +171,6 @@ setInterval(function () {
 
   document.getElementById('hudMood').textContent = ZahlCore.moodLabel(state);
   document.getElementById('hudLevel').textContent = 'LV ' + state.level;
-  document.getElementById('soulVal').textContent = state.soulBalance;
 
   var shellEl = document.getElementById('shell');
   shellEl.classList.toggle('feral', state.feralMode);
@@ -209,7 +183,5 @@ setInterval(function () {
 setInterval(saveState, 5000);
 window.addEventListener('beforeunload', saveState);
 
-refreshUiMode();
 document.getElementById('hudMood').textContent = ZahlCore.moodLabel(state);
 document.getElementById('hudLevel').textContent = 'LV ' + state.level;
-document.getElementById('soulVal').textContent = state.soulBalance;

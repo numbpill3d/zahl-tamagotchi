@@ -29,7 +29,8 @@
       "index.html",
       "style.css",
       "package.json",
-      "core/**/*"
+      "core/**/*",
+      "assets/**/*"
     ],
     "extraResources": []
   }

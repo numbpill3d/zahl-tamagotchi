@@ -5,7 +5,7 @@ const store = new Store();
 let mainWindow;
 
 const WIN_W = 340;
-const WIN_H = 620;
+const WIN_H = 750;
 
 function createWindow() {
   const bounds = store.get('windowBounds');
