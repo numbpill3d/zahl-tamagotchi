@@ -1,0 +1,36 @@
+{
+  "name": "zahl-tamagotchi-desktop",
+  "version": "1.0.0",
+  "description": "Zahl — demonic tamagotchi desktop companion",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "author": "numbpill3d",
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^26.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.numbpill3d.zahl-tamagotchi",
+    "productName": "Zahl",
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Game"
+    },
+    "files": [
+      "main.js",
+      "renderer.js",
+      "index.html",
+      "style.css",
+      "package.json",
+      "core/**/*"
+    ],
+    "extraResources": []
+  }
+}

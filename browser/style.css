@@ -1,0 +1,231 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #060010;
+  color: #c0a0f0;
+  font-family: 'Courier New', monospace;
+  padding: 20px;
+  padding-bottom: 70px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+@keyframes ashStorm {
+  0%   { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+.ash-storm {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: radial-gradient(circle, #1a0840 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.25;
+  pointer-events: none;
+  animation: ashStorm 25s linear infinite;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  background: rgba(6,0,16,0.92);
+  border: 2px solid #3a1560;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(120,60,200,0.35);
+}
+
+.header { text-align: center; border-bottom: 1px solid #3a1560; margin-bottom: 20px; padding-bottom: 10px; }
+
+@keyframes titleGlitch {
+  0%, 88%, 94%, 100% { text-shadow: 2px 2px 0px #1a0840, 0 0 10px #7840c0; letter-spacing: 2px; }
+  89% { text-shadow: -2px 0 #9020d0, 3px 0 #4010a0, 0 0 20px #c060ff; letter-spacing: 3px; }
+  90% { text-shadow: 2px -1px 0px #1a0840, 0 0 6px #5020a0; letter-spacing: 1px; }
+  91% { text-shadow: 2px 2px 0px #1a0840, 0 0 28px #d090ff; letter-spacing: 2px; }
+}
+
+h1 {
+  font-size: 30px;
+  color: #b080ff;
+  text-shadow: 2px 2px 0px #1a0840, 0 0 10px #7840c0;
+  letter-spacing: 4px;
+  animation: titleGlitch 12s ease-in-out infinite;
+}
+
+.subtitle { font-size: 12px; color: #7050a0; margin-top: 4px; }
+
+.pet-display { text-align: center; margin: 20px 0; }
+
+.canvas-wrap {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+#zahlCanvas {
+  background: #060010;
+  border: 3px solid #3a1560;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: 256px;
+  height: 256px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(90,30,160,0.5);
+  transition: box-shadow 0.6s ease, border-color 0.6s ease;
+  cursor: default;
+}
+
+.scanlines {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#mood { margin-top: 10px; font-weight: bold; color: #9060d0; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s ease; }
+#stageLabel { font-size: 11px; color: #5040a0; letter-spacing: 2px; margin-top: 2px; }
+
+.stats { margin: 20px 0; }
+.stat { margin-bottom: 12px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.stat label { display: inline-block; width: 100px; font-weight: bold; color: #7050a0; font-size: 12px; }
+
+.bar { display: inline-block; width: 200px; height: 16px; background: #0a0020; border: 1px solid #2a1040; overflow: hidden; flex-shrink: 0; }
+.fill { height: 100%; background: #5a30a0; width: 0%; transition: width 0.4s ease, background 0.6s ease; }
+
+@keyframes hungerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.hunger-crit { animation: hungerPulse 0.8s ease-in-out infinite; }
+
+#corrosionBar { background: #306a80; } #corrosionVal { color: #3a7890; }
+#entropyBar   { background: #6020a0; } #entropyVal   { color: #6824b0; }
+#corruptBar   { background: #a01840; } #corruptVal   { color: #a01838; }
+#expBar       { background: #2060a0; } #expVal       { color: #2068b0; }
+
+.stat span { font-size: 11px; color: #5040a0; min-width: 52px; white-space: nowrap; }
+
+.souls-stat { flex-direction: row; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #1a0840; margin-top: 4px; }
+
+@keyframes soulPulse { 0%, 100% { text-shadow: 0 0 8px #7840c0; } 50% { text-shadow: 0 0 18px #b060ff, 0 0 4px #d090ff; } }
+.soul-count { font-size: 22px; font-weight: bold; color: #cc80ff; text-shadow: 0 0 8px #7840c0; min-width: auto; animation: soulPulse 3s ease-in-out infinite; }
+.soul-label { font-size: 11px; color: #5040a0; }
+.soul-total { font-size: 11px; color: #3a1060; min-width: auto; }
+
+.actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 20px 0; }
+
+button {
+  background: #0a0020;
+  color: #9060d0;
+  border: 1px solid #3a1560;
+  padding: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover { background: #1a0840; border-color: #9060d0; color: #e0b0ff; box-shadow: 0 0 6px rgba(144,96,208,0.4); }
+button:active:not(:disabled) { transform: scale(0.96); background: #140830; box-shadow: none; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.panel { margin: 15px 0; padding: 15px; border: 1px dashed #2a1040; background: rgba(10,0,32,0.5); transition: border-color 0.3s, box-shadow 0.3s; }
+.panel:hover { border-color: #3a1868; box-shadow: 0 0 10px rgba(80,20,150,0.2); }
+.panel h3 { color: #9060d0; margin-bottom: 12px; font-size: 14px; letter-spacing: 1px; border-bottom: 1px solid #1a0840; padding-bottom: 6px; }
+
+.ritual-panel .ritual-active { font-size: 11px; color: #cc80ff; font-style: italic; text-shadow: 0 0 6px #7840c0; }
+
+.ritual-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+
+.ritual-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px; background: #080018; border: 1px solid #2a1040; cursor: pointer; transition: all 0.15s; }
+.ritual-btn:hover { background: #1a0840; border-color: #7840c0; box-shadow: 0 0 8px rgba(120,64,192,0.4); }
+.ritual-btn.active-toggle { border-color: #cc80ff; box-shadow: 0 0 10px rgba(180,100,255,0.5); }
+.ritual-btn .r-name { font-size: 11px; font-weight: bold; color: #9060d0; letter-spacing: 0.5px; text-align: center; }
+.ritual-btn .r-cost { font-size: 10px; color: #5040a0; text-align: center; }
+
+.soul-list { max-height: 160px; overflow-y: auto; font-size: 11px; }
+.soul-list::-webkit-scrollbar { width: 4px; }
+.soul-list::-webkit-scrollbar-track { background: #060010; }
+.soul-list::-webkit-scrollbar-thumb { background: #2a1040; }
+
+.soul-entry { display: flex; gap: 10px; padding: 3px 0; border-bottom: 1px solid #0a0020; color: #7050a0; animation: entryIn 0.25s ease-out; }
+@keyframes entryIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+
+.howto { margin-top: 20px; font-size: 11px; color: #4a2870; line-height: 1.5; border-top: 1px solid #1a0840; padding-top: 10px; }
+
+@keyframes ritualPanelPulse { 0%, 100% { border-color: #2a1040; } 50% { border-color: #9060d0; box-shadow: 0 0 12px rgba(144,96,208,0.5); } }
+.ritual-active-glow { animation: ritualPanelPulse 1.2s ease-in-out infinite; }
+
+#mistress {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: #060010;
+  border-left: 3px solid #7840c0;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #7050a0;
+  z-index: 2;
+  opacity: 0.85;
+  max-width: 320px;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #060010; }
+::-webkit-scrollbar-thumb { background: #2a1040; }
+
+/* ---- SOUL ORBS ---- */
+#arena { overflow: visible; }
+
+.soul-orb {
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e0c0ff, #a060ff 60%, #4a1090 100%);
+  box-shadow: 0 0 10px #a060ff, 0 0 20px rgba(160,96,255,0.6);
+  cursor: pointer;
+  z-index: 3;
+  animation: orbDrift 5.5s linear forwards, orbPulse 0.8s ease-in-out infinite;
+}
+
+.soul-orb:hover { transform: scale(1.2); }
+
+@keyframes orbPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.4); } }
+
+@keyframes orbDrift {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.soul-orb.caught {
+  animation: orbCaught 0.35s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes orbCaught {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  body { padding: 8px; padding-bottom: 80px; }
+  .container { padding: 10px; }
+  h1 { font-size: 22px; letter-spacing: 2px; }
+  .stat label { width: 72px; font-size: 11px; }
+  .bar { flex: 1; width: auto; min-width: 60px; }
+  .stat span { min-width: 44px; font-size: 10px; }
+  #zahlCanvas { width: min(256px, calc(100vw - 56px)); height: min(256px, calc(100vw - 56px)); }
+  button { min-height: 44px; font-size: 11px; }
+  .ritual-btn { min-height: 52px; padding: 12px 6px; }
+  .ritual-grid { grid-template-columns: repeat(2, 1fr); }
+  #mistress { max-width: 240px; font-size: 10px; padding: 4px 8px; bottom: 4px; }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ZAHL</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell" id="shell">
+  <div class="shell-face">
+
+    <button class="close-btn" id="closeBtn" title="close">&#10005;</button>
+    <div class="brand">Z A H L</div>
+
+    <div class="rune rune-l"></div>
+    <div class="rune rune-r"></div>
+
+    <div class="screen-bezel">
+      <div class="screen">
+        <canvas id="zahlCanvas" width="64" height="64"></canvas>
+        <div class="scanlines"></div>
+
+        <div class="icon-row" id="iconRow">
+          <div class="icon" data-icon="feed"><span>FD</span></div>
+          <div class="icon" data-icon="pet"><span>PT</span></div>
+          <div class="icon" data-icon="ritual"><span>RT</span></div>
+          <div class="icon" data-icon="stats"><span>ST</span></div>
+        </div>
+
+        <div class="hud">
+          <span id="hudMood">HUNGRY</span>
+          <span id="hudLevel">LV 1</span>
+        </div>
+
+        <div class="submenu" id="submenu"></div>
+      </div>
+    </div>
+
+    <div class="soul-readout">
+      <span class="sr-label">SOULS</span>
+      <span id="soulVal">0</span>
+    </div>
+
+    <div class="buttons">
+      <button class="dbtn" id="btnA"><span class="glyph">&#987;</span><span class="lbl">MENU</span></button>
+      <button class="dbtn" id="btnB"><span class="glyph">&#937;</span><span class="lbl">SELECT</span></button>
+      <button class="dbtn" id="btnC"><span class="glyph">&#8224;</span><span class="lbl">BACK</span></button>
+    </div>
+
+  </div>
+</div>
+
+<script src="core/zahl-core.js"></script>
+<script src="core/zahl-render.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

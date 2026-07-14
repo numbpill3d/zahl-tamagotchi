@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ZAHL</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="ash-storm"></div>
+<div class="container">
+
+  <div class="header">
+    <h1>ZAHL</h1>
+    <div class="subtitle">a corroded spirit needs tending</div>
+  </div>
+
+  <div class="pet-display">
+    <div class="canvas-wrap" id="arena">
+      <canvas id="zahlCanvas" width="64" height="64"></canvas>
+      <div class="scanlines"></div>
+    </div>
+    <div id="mood">HUNGRY</div>
+    <div id="stageLabel">WRAITH</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <label>HUNGER</label>
+      <div class="bar"><div id="hungerBar" class="fill"></div></div>
+      <span id="hungerVal">0%</span>
+    </div>
+    <div class="stat">
+      <label>LEVEL</label>
+      <div class="bar"><div id="levelBar" class="fill"></div></div>
+      <span id="levelVal">1/10</span>
+    </div>
+    <div class="stat">
+      <label>CORROSION</label>
+      <div class="bar"><div id="corrosionBar" class="fill bar-corrosion"></div></div>
+      <span id="corrosionVal">0%</span>
+    </div>
+    <div class="stat">
+      <label>ENTROPY</label>
+      <div class="bar"><div id="entropyBar" class="fill bar-entropy"></div></div>
+      <span id="entropyVal">0%</span>
+    </div>
+    <div class="stat">
+      <label>CORRUPTION</label>
+      <div class="bar"><div id="corruptBar" class="fill bar-corrupt"></div></div>
+      <span id="corruptVal">0%</span>
+    </div>
+    <div class="stat">
+      <label>EXP</label>
+      <div class="bar"><div id="expBar" class="fill bar-exp"></div></div>
+      <span id="expVal">0/100</span>
+    </div>
+    <div class="stat souls-stat">
+      <label>SOULS</label>
+      <span id="soulBal" class="soul-count">0</span>
+      <span class="soul-label">balance</span>
+      <span id="soulTotal" class="soul-total">/ 0 total</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="feedBtn">FEED</button>
+    <button id="petBtn">PET</button>
+  </div>
+
+  <div class="panel ritual-panel">
+    <h3>RITUALS <span id="ritualActive" class="ritual-active"></span></h3>
+    <div class="ritual-grid">
+      <button class="ritual-btn" data-ritual="0">
+        <span class="r-name">CHANNEL BURST</span>
+        <span class="r-cost">5 souls · 30s · faster souls</span>
+      </button>
+      <button class="ritual-btn" data-ritual="1">
+        <span class="r-name">BEACON STORM</span>
+        <span class="r-cost">8 souls · soul rain</span>
+      </button>
+      <button class="ritual-btn" data-ritual="2">
+        <span class="r-name">HAUNT</span>
+        <span class="r-cost">12 souls · 60s · summon ghost</span>
+      </button>
+      <button class="ritual-btn" data-ritual="3">
+        <span class="r-name">SUMMON PORTAL</span>
+        <span class="r-cost">15 souls · toggle</span>
+      </button>
+      <button class="ritual-btn" data-ritual="4">
+        <span class="r-name">PACKET STORM</span>
+        <span class="r-cost">10 souls · soul burst</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>SOUL LEDGER</h3>
+    <div id="soulList" class="soul-list"></div>
+  </div>
+
+  <div class="howto">
+    <p>souls drift across the void — click them before they fade. spend souls on rituals. feed and pet Zahl to keep hunger and corrosion in check, or it goes feral.</p>
+  </div>
+
+</div>
+
+<div id="mistress">MISTRESS DRATHA: "Feed the beast or lose your stack."</div>
+
+<script src="core/zahl-core.js"></script>
+<script src="core/zahl-render.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
