@@ -198,6 +198,10 @@ setInterval(function () {
   document.getElementById('hudLevel').textContent = 'LV ' + state.level;
   document.getElementById('soulVal').textContent = state.soulBalance;
 
+  var shellEl = document.getElementById('shell');
+  shellEl.classList.toggle('feral', state.feralMode);
+  shellEl.classList.toggle('starving', !state.feralMode && state.hunger < 20);
+
   if (uiMode === 'ritual') renderRitualSubmenu();
   if (uiMode === 'stats') renderStatsSubmenu();
 }, 1000);

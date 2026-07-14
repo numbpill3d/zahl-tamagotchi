@@ -12,6 +12,22 @@ html, body {
   width: 340px;
   height: 620px;
   -webkit-app-region: drag;
+  position: relative;
+}
+
+@keyframes shellBreathe {
+  0%, 100% {
+    box-shadow:
+      0 0 46px rgba(200,0,20,0.35),
+      inset 0 0 70px rgba(120,0,10,0.28),
+      inset 0 0 2px rgba(255,60,60,0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 58px rgba(200,0,20,0.48),
+      inset 0 0 76px rgba(120,0,10,0.36),
+      inset 0 0 3px rgba(255,80,80,0.5);
+  }
 }
 
 .shell-face {
@@ -22,10 +38,7 @@ html, body {
     radial-gradient(circle at 50% 30%, rgba(120,0,10,0.18), transparent 55%),
     linear-gradient(160deg, #200005 0%, #0a0002 55%, #000000 100%);
   border: 3px solid #4a0009;
-  box-shadow:
-    0 0 46px rgba(200,0,20,0.35),
-    inset 0 0 70px rgba(120,0,10,0.28),
-    inset 0 0 2px rgba(255,60,60,0.4);
+  animation: shellBreathe 5s ease-in-out infinite;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -33,6 +46,111 @@ html, body {
   padding-top: 168px;
   padding-bottom: 34px;
   gap: 14px;
+  overflow: hidden;
+}
+
+/* glossy plastic highlight — clipped to the shell shape along with everything else */
+.shell-face::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(255,180,190,0.08) 0%, transparent 26%, transparent 68%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* drifting ash motes across the shell surface, echoes the browser build's ash-storm */
+.shell-face::after {
+  content: '';
+  position: absolute;
+  top: -20%; left: -20%; width: 140%; height: 140%;
+  background-image: radial-gradient(circle, rgba(255,50,70,0.4) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.16;
+  animation: shellAsh 34s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes shellAsh { 0% { background-position: 0 0; } 100% { background-position: 100px 160px; } }
+
+/* keychain loop — a sibling, not clipped by the shell polygon, so it can
+   sit right at the tapering top point like a hoop cast onto the shell */
+.shell-ring {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 5px solid #4a0009;
+  background: radial-gradient(circle at 35% 30%, #6a0010, #140002 70%);
+  box-shadow: 0 0 10px rgba(200,0,20,0.5), inset 0 0 4px rgba(0,0,0,0.85);
+  z-index: 0;
+}
+
+/* rivets at the facet seams — small cast bolts, sells the "device" feel */
+.rivet {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #b03848, #3a0008 70%);
+  box-shadow: 0 0 4px rgba(255,50,70,0.55), inset 0 0 2px rgba(0,0,0,0.7);
+  z-index: 2;
+}
+.rivet-tl { top: 46px; left: 60px; }
+.rivet-tr { top: 46px; right: 60px; }
+.rivet-bl { bottom: 96px; left: 40px; }
+.rivet-br { bottom: 96px; right: 40px; }
+
+/* hairline corrosion cracks etched into the shell */
+.crack {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,50,70,0.5), transparent);
+  filter: drop-shadow(0 0 2px rgba(255,30,50,0.45));
+  z-index: 2;
+}
+.crack-1 { top: 205px; left: 26px; width: 54px; transform: rotate(22deg); }
+.crack-2 { top: 340px; right: 18px; width: 42px; transform: rotate(-16deg); }
+.crack-3 { bottom: 150px; left: 22px; width: 36px; transform: rotate(-30deg); }
+
+/* speaker grille flanking the button row */
+.grille {
+  position: absolute;
+  bottom: 46px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  z-index: 2;
+}
+.grille-l { left: 30px; }
+.grille-r { right: 30px; }
+.grille span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #3a0008;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.8), 0 0 1px rgba(255,40,60,0.3);
+}
+
+/* mood-reactive shell glow, toggled from renderer.js */
+.shell.feral .shell-face {
+  animation: shellFeralPulse 0.55s ease-in-out infinite;
+  border-color: #8a0010;
+}
+@keyframes shellFeralPulse {
+  0%, 100% {
+    box-shadow: 0 0 46px rgba(200,0,20,0.4), inset 0 0 70px rgba(120,0,10,0.3), inset 0 0 2px rgba(255,60,60,0.45);
+  }
+  50% {
+    box-shadow: 0 0 78px rgba(255,10,20,0.85), inset 0 0 96px rgba(200,0,10,0.55), inset 0 0 5px rgba(255,100,100,0.8);
+  }
+}
+.shell.starving .shell-face {
+  animation: none;
+  box-shadow: 0 0 58px rgba(230,70,0,0.55), inset 0 0 76px rgba(150,20,0,0.34), inset 0 0 2px rgba(255,130,60,0.5);
 }
 
 .close-btn {
@@ -53,6 +171,8 @@ html, body {
 .close-btn:hover { color: #ff4060; border-color: #ff2040; box-shadow: 0 0 8px rgba(255,32,64,0.5); }
 
 .brand {
+  position: relative;
+  z-index: 3;
   color: #b02030;
   font-weight: bold;
   font-size: 15px;
@@ -62,6 +182,7 @@ html, body {
 
 .rune {
   position: absolute;
+  z-index: 3;
   top: 158px;
   width: 8px;
   height: 8px;
@@ -75,6 +196,8 @@ html, body {
 
 .screen-bezel {
   -webkit-app-region: no-drag;
+  position: relative;
+  z-index: 3;
   width: 260px;
   height: 250px;
   background: #0a0003;
@@ -194,6 +317,8 @@ html, body {
 
 .soul-readout {
   -webkit-app-region: no-drag;
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -204,6 +329,8 @@ html, body {
 
 .buttons {
   -webkit-app-region: no-drag;
+  position: relative;
+  z-index: 3;
   display: flex;
   gap: 18px;
 }
