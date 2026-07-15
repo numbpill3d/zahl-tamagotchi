@@ -89,8 +89,15 @@ html, body {
   font-size: 10px;
   color: #c04050;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #5a0009 #0a0004;
 }
 .submenu.visible { display: flex; }
+
+.submenu::-webkit-scrollbar { width: 4px; }
+.submenu::-webkit-scrollbar-track { background: #0a0004; }
+.submenu::-webkit-scrollbar-thumb { background: #5a0009; }
+.submenu::-webkit-scrollbar-thumb:hover { background: #8a0010; }
 
 .submenu h4 {
   color: #ff3050;

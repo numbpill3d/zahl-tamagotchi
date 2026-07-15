@@ -37,20 +37,104 @@
       for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) stats[k] = s[k];
     }
 
+    var EMOTE_FOR_EVENT = {
+      fed: '..!', petted: '^_^', levelup: '^_^', soulcap: '..?',
+      ritual: '...', devolve: ';_;', burst: '..!',
+    };
+
+    var emoteText = null;
+    var emoteTimer = 0;
+    var emoteMaxTimer = 0;
+    var lastAmbientEmoteFrame = -1000;
+
+    function showEmote(text, frames) {
+      emoteText = text;
+      emoteTimer = frames;
+      emoteMaxTimer = frames;
+    }
+
     function trigger(name) {
       var durations = { fed: 24, petted: 24, levelup: 32, soulcap: 12, ritual: 20, burst: 16, devolve: 24, ghost: 40 };
       petState = name;
       stateTimer = durations[name] || 20;
       idleFrames = 0;
+      if (EMOTE_FOR_EVENT[name]) showEmote(EMOTE_FOR_EVENT[name], 28);
     }
 
     // ── pixel helpers ──────────────────────────────────────────────────
-    var cls = function () { ctx.fillStyle = '#000811'; ctx.fillRect(0, 0, 64, 64); };
+    var STAR_DOTS = [[6, 10], [54, 8], [10, 50], [58, 44], [46, 4], [3, 34], [60, 58], [26, 58], [15, 6], [50, 54]];
+    var cls = function () {
+      var grad = ctx.createRadialGradient(32, 24, 5, 32, 34, 48);
+      grad.addColorStop(0, '#171b38');
+      grad.addColorStop(0.55, '#0d1024');
+      grad.addColorStop(1, '#03040a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      STAR_DOTS.forEach(function (d, i) {
+        if ((frame + i * 7) % 64 < 40) p(d[0], d[1], i % 3 === 0 ? '#3a4470' : '#262c50');
+      });
+    };
     var r    = function (x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
     var p    = function (x, y, c) { ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1); };
     var getBob    = function () { return Math.round(Math.sin(frame * 0.45) * 1); };
     var getBlink  = function () { return (frame % 90) < 4; };
     var getFlapUp = function () { return (frame % 6) < 3; };
+
+    // tiny 3x5 pixel font — just the glyphs the emote set needs, drawn
+    // with the same p()/r() primitives as the sprites so it stays crisp
+    // at native resolution instead of fighting canvas font antialiasing
+    var GLYPHS = {
+      '.': ['...', '...', '...', '...', '.#.'],
+      '^': ['.#.', '#.#', '...', '...', '...'],
+      '_': ['...', '...', '...', '...', '###'],
+      '>': ['#..', '.#.', '..#', '.#.', '#..'],
+      ':': ['...', '.#.', '...', '.#.', '...'],
+      '(': ['.#.', '#..', '#..', '#..', '.#.'],
+      ';': ['...', '.#.', '...', '.#.', '#..'],
+      'T': ['###', '.#.', '.#.', '.#.', '.#.'],
+      'z': ['###', '..#', '.#.', '#..', '###'],
+      '?': ['.#.', '#.#', '..#', '.#.', '.#.'],
+      '!': ['.#.', '.#.', '.#.', '...', '.#.'],
+    };
+
+    function textWidthPx(text) { return text.length * 4 - 1; }
+
+    function drawPixelText(text, x, y, color) {
+      var cx = x;
+      for (var i = 0; i < text.length; i++) {
+        var g = GLYPHS[text[i]];
+        if (g) {
+          for (var row = 0; row < 5; row++) {
+            for (var col = 0; col < 3; col++) {
+              if (g[row][col] === '#') p(cx + col, y + row, color);
+            }
+          }
+        }
+        cx += 4;
+      }
+    }
+
+    function drawEmote() {
+      if (!emoteTimer) return;
+      var fadeIn = Math.min(1, (emoteMaxTimer - emoteTimer) / 6);
+      var fadeOut = Math.min(1, emoteTimer / 6);
+      var alpha = Math.min(fadeIn, fadeOut);
+      var bob = Math.round(Math.sin(frame * 0.3) * 1);
+      var text = emoteText;
+      var tw = textWidthPx(text);
+      var boxW = tw + 6;
+      var boxX = 32 - Math.round(boxW / 2);
+      var boxY = 3 + bob;
+      var boxH = 9;
+
+      ctx.globalAlpha = alpha;
+      r(boxX, boxY, boxW, boxH, '#0a0018');
+      ctx.strokeStyle = '#a060ff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(boxX + 0.5, boxY + 0.5, boxW - 1, boxH - 1);
+      drawPixelText(text, boxX + 3, boxY + 2, '#f8e8ff');
+      ctx.globalAlpha = 1;
+    }
 
     function drawSparkles(cx, top) {
       var offsets = [[-5, -2], [3, -1], [-2, -4], [5, -3], [0, -5], [7, -2], [-4, -1], [2, -5]];
@@ -660,6 +744,26 @@
       if (petState === 'ghost') drawGhost();
 
       applyCorrosionGlitch(stats.corrosion);
+
+      // ambient emotes — mood-driven, gated so they don't spam
+      if (!emoteTimer) {
+        if (stats.feral && frame - lastAmbientEmoteFrame > 70 && Math.random() < 0.03) {
+          showEmote(Math.random() < 0.5 ? '>:(' : ';_;', 24);
+          lastAmbientEmoteFrame = frame;
+        } else if (!stats.feral && stats.hunger < 20 && frame - lastAmbientEmoteFrame > 90 && Math.random() < 0.02) {
+          showEmote(';_;', 24);
+          lastAmbientEmoteFrame = frame;
+        } else if (fidgetMode && frame - lastAmbientEmoteFrame > 130 && Math.random() < 0.015) {
+          showEmote('zzz...', 34);
+          lastAmbientEmoteFrame = frame;
+        } else if (frame - lastAmbientEmoteFrame > 200 && Math.random() < 0.006) {
+          showEmote(Math.random() < 0.5 ? '..?' : '...', 20);
+          lastAmbientEmoteFrame = frame;
+        }
+      }
+      drawEmote();
+      if (emoteTimer > 0) emoteTimer--;
+
       if (stateTimer > 0 && --stateTimer === 0) petState = 'idle';
     }
 
