@@ -21,6 +21,18 @@
     var idleFrames = 0;
     var rafId = null;
 
+    var splashActive = false;
+    var splashFrame = 0;
+    var splashTotalFrames = 0;
+    var splashCallback = null;
+
+    function playSplash(totalFrames, onComplete) {
+      splashActive = true;
+      splashFrame = 0;
+      splashTotalFrames = totalFrames || 26;
+      splashCallback = onComplete || null;
+    }
+
     function setStats(s) {
       for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) stats[k] = s[k];
     }
@@ -517,8 +529,96 @@
       ctx.restore();
     }
 
+    // ── boot splash — a surreal little eye waking up in the void, blinks
+    // once, then closes into a flash that cuts to the real pet ──────────
+    function drawEyeLens(cx, cy, openAmt, scleraColor, edgeColor) {
+      if (openAmt < 0.12) {
+        r(cx - 17, cy - 1, 34, 2, edgeColor);
+        return;
+      }
+      var rows = [
+        { dy: -7, w: 18 }, { dy: -5, w: 26 }, { dy: -3, w: 31 }, { dy: 0, w: 34 },
+        { dy: 3, w: 31 }, { dy: 5, w: 26 }, { dy: 7, w: 18 },
+      ];
+      rows.forEach(function (row) {
+        var y = cy + Math.round(row.dy * openAmt);
+        r(cx - Math.round(row.w / 2), y, row.w, 2, scleraColor);
+      });
+      var edgeY = Math.round(7 * openAmt);
+      r(cx - 17, cy - edgeY, 34, 1, edgeColor);
+      r(cx - 17, cy + edgeY, 34, 1, edgeColor);
+    }
+
+    function drawSplash(f, total) {
+      var t = f / total;
+
+      ctx.fillStyle = 'rgba(60,15,90,0.45)';
+      ctx.fillRect(0, 0, 64, 64);
+
+      for (var i = 0; i < 14; i++) {
+        var ang = (i / 14) * Math.PI * 2 + f * 0.05;
+        var rad = 22 + 6 * Math.sin(f * 0.09 + i);
+        var mx = 32 + Math.round(Math.cos(ang) * rad);
+        var my = 32 + Math.round(Math.sin(ang) * rad * 0.6);
+        if ((f + i * 3) % 20 < 10 && mx >= 0 && mx < 64 && my >= 0 && my < 64) {
+          p(mx, my, i % 2 === 0 ? '#8a3fc0' : '#ff7fb8');
+        }
+      }
+
+      var openAmt;
+      if (t < 0.15) openAmt = 0;
+      else if (t < 0.22) openAmt = (t - 0.15) / 0.07;
+      else if (t < 0.42) openAmt = 1;
+      else if (t < 0.47) openAmt = 1 - (t - 0.42) / 0.05;
+      else if (t < 0.52) openAmt = (t - 0.47) / 0.05;
+      else if (t < 0.82) openAmt = 1;
+      else if (t < 0.94) openAmt = 1 - (t - 0.82) / 0.12;
+      else openAmt = 0;
+      openAmt = Math.max(0, Math.min(1, openAmt));
+
+      var cx = 32, cy = 32;
+      drawEyeLens(cx, cy, openAmt, '#fce4f5', '#ff8fc0');
+
+      if (openAmt > 0.45) {
+        r(cx - 5, cy - 5, 10, 10, '#a24fe0');
+        r(cx - 3, cy - 3, 6, 6, '#ff70c0');
+        r(cx - 2, cy - 2, 4, 4, '#2a0838');
+        p(cx - 1, cy - 1, '#ffffff');
+      }
+
+      if (openAmt > 0.6) {
+        p(cx - 16, cy - Math.round(7 * openAmt) - 1, '#3a1030');
+        p(cx - 15, cy - Math.round(7 * openAmt) - 2, '#3a1030');
+        p(cx + 15, cy - Math.round(7 * openAmt) - 1, '#3a1030');
+        p(cx + 16, cy - Math.round(7 * openAmt) - 2, '#3a1030');
+
+        p(cx - 4, cy + 11, '#ff9fc8');
+        r(cx - 3, cy + 12, 6, 1, '#ff9fc8');
+        p(cx + 4, cy + 11, '#ff9fc8');
+      }
+
+      if (t > 0.94) {
+        var flashT = (t - 0.94) / 0.06;
+        ctx.fillStyle = 'rgba(255,235,250,' + (flashT * 0.9) + ')';
+        ctx.fillRect(0, 0, 64, 64);
+      }
+    }
+
     function render() {
       cls();
+
+      if (splashActive) {
+        drawSplash(splashFrame, splashTotalFrames);
+        splashFrame++;
+        if (splashFrame >= splashTotalFrames) {
+          splashActive = false;
+          var cb = splashCallback;
+          splashCallback = null;
+          if (cb) cb();
+        }
+        return;
+      }
+
       var b = getBob();
       var bl = getBlink();
 
@@ -580,7 +680,7 @@
     function start() { if (rafId === null) rafId = requestAnimationFrame(loop); }
     function stop() { if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
 
-    return { setStats: setStats, trigger: trigger, start: start, stop: stop, render: render };
+    return { setStats: setStats, trigger: trigger, start: start, stop: stop, render: render, playSplash: playSplash };
   }
 
   var ZahlRender = { create: create };

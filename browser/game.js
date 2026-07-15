@@ -24,6 +24,7 @@ ZahlCore.update(state, Date.now()); // catch up on decay since last session
 
 var canvas = document.getElementById('zahlCanvas');
 var renderer = ZahlRender.create(canvas);
+renderer.playSplash(26);
 renderer.start();
 
 var whispers = [

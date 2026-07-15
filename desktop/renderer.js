@@ -38,6 +38,7 @@ ZahlCore.update(state, Date.now());
 
 var canvas = document.getElementById('zahlCanvas');
 var renderer = ZahlRender.create(canvas);
+renderer.playSplash(26);
 renderer.start();
 
 // ── gem hotspots — direct-select, no cycling menu. Each gem sculpted

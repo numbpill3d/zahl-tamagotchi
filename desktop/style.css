@@ -139,3 +139,32 @@ html, body {
 .hs-pet    { left: 43.53%; top: 78.96%; }
 .hs-ritual { left: 58.93%; top: 78.96%; }
 .hs-stats  { left: 79.47%; top: 75.70%; }
+
+/* ── hover tooltips — explain what each gem does before you press it ── */
+.tip {
+  position: absolute;
+  bottom: 130%;
+  background: #0a0004;
+  border: 1px solid #6a000e;
+  color: #e07090;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  padding: 4px 7px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 0 10px rgba(200,0,20,0.45);
+  z-index: 10;
+}
+.hotspot:hover .tip { opacity: 1; }
+
+.tip-center { left: 50%; transform: translate(-50%, 4px); }
+.hotspot:hover .tip-center { transform: translate(-50%, 0); }
+
+.tip-left { right: 0; transform: translateY(4px); }
+.hotspot:hover .tip-left { transform: translateY(0); }
+
+.tip-right { left: 0; transform: translateY(4px); }
+.hotspot:hover .tip-right { transform: translateY(0); }
