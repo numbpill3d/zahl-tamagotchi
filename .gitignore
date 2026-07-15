@@ -1,5 +1,6 @@
 node_modules/
 dist/
+release/
 browser/core/
 desktop/core/
 *.log
