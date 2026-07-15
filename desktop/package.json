@@ -19,9 +19,13 @@
   "build": {
     "appId": "com.numbpill3d.zahl-tamagotchi",
     "productName": "Zahl",
+    "icon": "assets/icon.png",
     "linux": {
       "target": ["AppImage", "deb"],
       "category": "Game"
+    },
+    "win": {
+      "target": ["portable", "nsis"]
     },
     "files": [
       "main.js",
@@ -30,8 +34,8 @@
       "style.css",
       "package.json",
       "core/**/*",
-      "assets/**/*"
-    ],
-    "extraResources": []
+      "assets/icon.png",
+      "assets/shell.png"
+    ]
   }
 }

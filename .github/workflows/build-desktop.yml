@@ -1,0 +1,59 @@
+name: build-desktop
+
+# Cross-platform electron-builder packaging. Windows/macOS builds are
+# unreliable via wine on Linux (rcedit kept getting killed under wine
+# locally) -- native runners are the standard fix. Linux can still be
+# built locally with ./release.sh; this covers Windows + macOS + a
+# from-CI Linux build for parity.
+
+on:
+  workflow_dispatch: {}
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: sync shared core into desktop/
+        shell: bash
+        run: |
+          mkdir -p desktop/core
+          cp core/*.js desktop/core/
+
+      - name: install deps
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+
+      - name: build (linux)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: desktop
+        run: npx electron-builder --linux AppImage --publish never
+
+      - name: build (windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: desktop
+        run: npx electron-builder --win portable --publish never
+
+      - name: build (mac)
+        if: matrix.os == 'macos-latest'
+        working-directory: desktop
+        run: npx electron-builder --mac dir --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zahl-desktop-${{ matrix.os }}
+          path: |
+            desktop/dist/*.AppImage
+            desktop/dist/*.exe
+            desktop/dist/mac*/**
+          if-no-files-found: ignore

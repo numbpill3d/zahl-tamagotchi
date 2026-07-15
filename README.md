@@ -15,17 +15,23 @@ mechanics so this runs anywhere, no ESP32 required.
 - `browser/` — itch.io build. Open `index.html` directly, or serve the
   folder. Souls drift across the screen and you click to catch them; that's
   the core interactive loop. Saves to `localStorage`.
-- `desktop/` — standalone Electron app shaped like a tamagotchi shell.
-  Souls trickle in passively over time instead of a click loop (it's a
-  companion sitting on your desktop, not something you stare at). Three
-  buttons — MENU / SELECT / BACK — navigate an icon row exactly like a real
-  tamagotchi: MENU cycles the icon (or the ritual list once inside it),
-  SELECT confirms, BACK backs out. Tapping the screen while idle is a quick
-  pet. Saves via `electron-store`.
+- `desktop/` — standalone Electron app. The shell is the real concept
+  render (`desktop/assets/shell.png`), not CSS — the gems already sculpted
+  into the art are invisible click hotspots (CLOSE / FEED / PET / RITUAL /
+  STATS, plus the "W" badge toggles desktop mode). Souls trickle in
+  passively over time instead of a click loop (it's a companion sitting on
+  your desktop, not something you stare at). `Ctrl+Alt+D` toggles desktop
+  mode from anywhere (window sits below other windows, like conky, instead
+  of always-on-top) — that's also the escape hatch if desktop mode makes
+  the window hard to click. Saves via `electron-store`.
 - `build.sh` — copies `core/*.js` into `browser/core/` and `desktop/core/`
   (both need their own copy: itch.io needs a self-contained zip, and the
   Electron build needs the files inside its app root) and zips the browser
   build for upload. Run it after any change to `core/`.
+- `release.sh` — everything `build.sh` does, plus packages the Linux
+  AppImage and Windows portable exe via electron-builder. Slower (downloads
+  platform electron binaries, runs wine for the Windows build) — run it
+  before a release, not on every edit.
 
 ## Running it
 
@@ -45,20 +51,37 @@ python3 -m http.server 8000   # or just open index.html directly
 ## Shipping to itch.io
 
 ```
-./build.sh
+./release.sh
 ```
-Upload `dist/zahl-tamagotchi-web.zip` as an HTML5 project on itch.io. Check
-"This file will be played in the browser" and set the viewport to at least
-700x900 (or enable fullscreen button) — the layout is responsive down to
-mobile width.
+produces:
+- `dist/zahl-tamagotchi-web.zip` — HTML5 build, embed in the page
+- `desktop/dist/Zahl-*.AppImage` — Linux download
+- `desktop/dist/Zahl*.exe` — Windows portable exe download
 
-## Packaging the desktop app for distribution
+**itch.io page setup** (once, in the web dashboard):
+1. New project → "Kind of project" = **HTML**.
+2. Upload `zahl-tamagotchi-web.zip`, check **"This file will be played in
+   the browser"**. Embed size ~700x950 (or enable the fullscreen button) —
+   the page is responsive down to mobile width.
+3. Upload the `.AppImage` and `.exe` as separate files, *not* checked as
+   "played in browser". Tag each with its platform (Linux / Windows) using
+   the checkboxes next to the file — that's what makes the itch.io app
+   auto-detect the right download per user.
+4. macOS isn't built here — electron-builder can't produce a signed `.dmg`
+   from Linux. Skip it, or build one later on an actual Mac / via CI.
 
+**Uploading via butler** (itch's CLI, faster for repeat updates than the
+web uploader — already installed at `~/.local/bin/butler`):
 ```
-cd desktop
-npm install
-npm run build   # electron-builder — outputs an AppImage/.deb via dist/
+butler login                                     # once, opens a browser to authorize
+butler push dist/zahl-tamagotchi-web.zip USER/zahl-tamagotchi:web
+butler push desktop/dist/Zahl-*.AppImage USER/zahl-tamagotchi:linux
+butler push "desktop/dist/Zahl 1.0.0.exe" USER/zahl-tamagotchi:windows
 ```
+Replace `USER` with the itch.io username and `zahl-tamagotchi` with
+whatever the project's URL slug ends up being (set when the project is
+created). Channel names (`web`/`linux`/`windows`) are arbitrary but itch
+uses them to group platforms — matching names above keeps it consistent.
 
 ## Design notes
 
