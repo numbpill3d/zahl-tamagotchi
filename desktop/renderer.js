@@ -132,6 +132,19 @@ document.getElementById('hsClose').addEventListener('click', function () {
   else window.close();
 });
 
+// the "W" badge already sculpted into the loop doubles as the desktop-mode
+// toggle — sits the window below other apps instead of always-on-top
+var hsToggle = document.getElementById('hsToggle');
+hsToggle.addEventListener('click', function () {
+  if (ipcRenderer) ipcRenderer.send('toggle-desktop-mode');
+});
+if (ipcRenderer) {
+  hsToggle.classList.toggle('active', !!ipcRenderer.sendSync('get-desktop-mode'));
+  ipcRenderer.on('desktop-mode-changed', function (event, enabled) {
+    hsToggle.classList.toggle('active', !!enabled);
+  });
+}
+
 // tap the screen itself while idle = quick pet, tamagotchi-poke style
 document.querySelector('.screen-overlay').addEventListener('click', function (e) {
   if (e.target.closest('.submenu')) return;

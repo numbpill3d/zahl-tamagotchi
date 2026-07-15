@@ -8,7 +8,7 @@
 <body>
 <div class="shell" id="shell">
   <img class="shell-art" src="assets/shell.png" alt="">
-  <canvas class="particles" id="particleCanvas" width="340" height="750"></canvas>
+  <canvas class="particles" id="particleCanvas" width="170" height="375"></canvas>
 
   <div class="screen-overlay">
     <canvas id="zahlCanvas" width="64" height="64"></canvas>
@@ -22,19 +22,22 @@
 
   <!-- invisible hotspots mapped onto the gems already sculpted into the shell art -->
   <div class="hotspot hs-close" id="hsClose">
-    <span class="tip tip-right">CLOSE — quits Zahl (progress is saved)</span>
+    <span class="tip tip-right">CLOSE — saves &amp; quits</span>
   </div>
   <div class="hotspot hs-feed" id="hsFeed">
-    <span class="tip tip-center">FEED — hunger +25</span>
+    <span class="tip tip-center">FEED +25 hunger</span>
   </div>
   <div class="hotspot hs-pet" id="hsPet">
-    <span class="tip tip-center">PET — hunger -2, corrosion -5, entropy +2</span>
+    <span class="tip tip-center">PET — calm + entropy</span>
   </div>
   <div class="hotspot hs-ritual" id="hsRitual">
-    <span class="tip tip-center">RITUALS — spend souls for timed effects</span>
+    <span class="tip tip-center">RITUALS: spend souls</span>
   </div>
   <div class="hotspot hs-stats" id="hsStats">
-    <span class="tip tip-left">STATS — full readout</span>
+    <span class="tip tip-left">STATS readout</span>
+  </div>
+  <div class="hotspot hs-toggle" id="hsToggle">
+    <span class="tip tip-right">DESKTOP MODE (or Ctrl+Alt+D)</span>
   </div>
 </div>
 

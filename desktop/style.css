@@ -1,8 +1,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
 
 html, body {
-  width: 340px;
-  height: 750px;
+  width: 170px;
+  height: 375px;
   background: transparent;
   overflow: hidden;
   font-family: 'Courier New', monospace;
@@ -10,8 +10,8 @@ html, body {
 
 .shell {
   position: relative;
-  width: 340px;
-  height: 750px;
+  width: 170px;
+  height: 375px;
   -webkit-app-region: drag;
 }
 
@@ -70,10 +70,10 @@ html, body {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 2px 8%;
-  font-size: 9px;
+  padding: 1px 6%;
+  font-size: 5px;
   color: #a02030;
-  letter-spacing: 1px;
+  letter-spacing: 0.3px;
   flex-shrink: 0;
 }
 
@@ -85,8 +85,8 @@ html, body {
   z-index: 4;
   display: none;
   flex-direction: column;
-  padding: 8px;
-  font-size: 10px;
+  padding: 4px;
+  font-size: 6px;
   color: #c04050;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -101,23 +101,23 @@ html, body {
 
 .submenu h4 {
   color: #ff3050;
-  font-size: 10px;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
+  font-size: 6px;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
   border-bottom: 1px solid #3a0008;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .sm-row {
   display: flex;
   justify-content: space-between;
-  padding: 4px 2px;
+  padding: 2px 1px;
   border-bottom: 1px solid #1a0004;
   cursor: pointer;
 }
 .sm-row:hover { background: #200006; }
 .sm-row .sm-name { flex: 1; }
-.sm-row .sm-meta { color: #6a1420; font-size: 9px; }
+.sm-row .sm-meta { color: #6a1420; font-size: 5px; }
 
 /* ── hotspots mapped onto the gems already sculpted into the art —
    invisible at rest, a faint ring on hover is the only affordance,
@@ -146,6 +146,9 @@ html, body {
 .hs-pet    { left: 43.53%; top: 78.96%; }
 .hs-ritual { left: 58.93%; top: 78.96%; }
 .hs-stats  { left: 79.47%; top: 75.70%; }
+.hs-toggle { left: 32.85%; top: 18.90%; width: 10%; }
+
+.hs-toggle.active { background: rgba(160,255,190,0.14); box-shadow: 0 0 8px rgba(140,255,180,0.4); }
 
 /* ── hover tooltips — explain what each gem does before you press it ── */
 .tip {
@@ -155,14 +158,16 @@ html, body {
   border: 1px solid #6a000e;
   color: #e07090;
   font-family: 'Courier New', monospace;
-  font-size: 9px;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  padding: 4px 7px;
+  font-size: 6px;
+  letter-spacing: 0.2px;
+  white-space: normal;
+  max-width: 92px;
+  width: max-content;
+  padding: 3px 4px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 0 10px rgba(200,0,20,0.45);
+  box-shadow: 0 0 8px rgba(200,0,20,0.45);
   z-index: 10;
 }
 .hotspot:hover .tip { opacity: 1; }
