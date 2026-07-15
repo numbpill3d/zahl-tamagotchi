@@ -16,6 +16,7 @@
     var stats = { hunger: 70, level: 1, corrosion: 0, entropy: 10, corruption: 0, feral: false, portalActive: false };
     var petState = 'idle';
     var stateTimer = 0;
+    var petStateMaxTimer = 0;
     var fidgetMode = false;
     var fidgetDir = 0;
     var idleFrames = 0;
@@ -57,6 +58,7 @@
       var durations = { fed: 24, petted: 24, levelup: 32, soulcap: 12, ritual: 20, burst: 16, devolve: 24, ghost: 40 };
       petState = name;
       stateTimer = durations[name] || 20;
+      petStateMaxTimer = stateTimer;
       idleFrames = 0;
       if (EMOTE_FOR_EVENT[name]) showEmote(EMOTE_FOR_EVENT[name], 28);
     }
@@ -713,8 +715,35 @@
       } else if (fidgetMode) {
         sx = Math.round(Math.sin(frame * 0.3) * fidgetDir);
       }
+
+      // physical reactions — the sprite itself deforms/hops instead of
+      // just spawning particles around a static body
+      var reactT = petStateMaxTimer > 0 ? 1 - (stateTimer / petStateMaxTimer) : 1;
+      var scaleX = 1, scaleY = 1, rot = 0, hopY = 0;
+      if (petState === 'fed') {
+        var gulp = Math.sin(reactT * Math.PI * 2.5) * (1 - reactT);
+        scaleY = 1 + gulp * 0.18;
+        scaleX = 1 - gulp * 0.11;
+      } else if (petState === 'petted') {
+        rot = Math.sin(reactT * Math.PI * 5) * 0.11 * (1 - reactT);
+        hopY = -Math.abs(Math.sin(reactT * Math.PI * 3)) * 3 * (1 - reactT);
+      } else if (petState === 'levelup') {
+        var grow = Math.sin(reactT * Math.PI);
+        scaleX = scaleY = 1 + grow * 0.2;
+      } else if (petState === 'devolve') {
+        var sink = Math.sin(reactT * Math.PI);
+        scaleY = 1 - sink * 0.16;
+        hopY = sink * 3;
+      }
+
       ctx.save();
       if (sx || sy) ctx.translate(sx, sy);
+      if (scaleX !== 1 || scaleY !== 1 || rot !== 0 || hopY !== 0) {
+        ctx.translate(32, 40 + hopY);
+        ctx.rotate(rot);
+        ctx.scale(scaleX, scaleY);
+        ctx.translate(-32, -40);
+      }
 
       var lv = stats.level;
       if (lv <= 2) drawWraithHatchling(b, bl);
