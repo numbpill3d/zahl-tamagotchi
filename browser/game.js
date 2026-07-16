@@ -27,6 +27,26 @@ var renderer = ZahlRender.create(canvas);
 renderer.playSplash(26);
 renderer.start();
 
+var audio = ZahlAudio.create();
+var AUDIO_PREF_KEY = 'zahl-audio-enabled';
+try {
+  var audioPref = localStorage.getItem(AUDIO_PREF_KEY);
+  if (audioPref !== null) audio.setEnabled(audioPref === '1');
+} catch (e) { /* ignore */ }
+
+var soundToggle = document.getElementById('soundToggle');
+function refreshSoundToggle() {
+  soundToggle.textContent = audio.isEnabled() ? 'SOUND: ON' : 'SOUND: OFF';
+}
+soundToggle.addEventListener('click', function () {
+  audio.setEnabled(!audio.isEnabled());
+  try { localStorage.setItem(AUDIO_PREF_KEY, audio.isEnabled() ? '1' : '0'); } catch (e) { /* ignore */ }
+  refreshSoundToggle();
+});
+refreshSoundToggle();
+
+var wasFeral = state.feralMode;
+
 var whispers = [
   'MISTRESS DRATHA: "The corrosion spreads. Feed it."',
   'MISTRESS DRATHA: "Every soul caught is a soul claimed."',
@@ -123,7 +143,9 @@ function spawnOrb() {
     orb.classList.add('caught');
     var result = ZahlCore.catchSoul(state, Date.now());
     renderer.trigger('soulcap');
+    audio.play('soulcap');
     if (result.feast) setMistress('MISTRESS DRATHA: "A FEAST! The void shudders!"', 4000);
+    if (result.leveledUp) { renderer.trigger('levelup'); audio.play('levelup'); }
     refreshUI();
     saveState();
     setTimeout(function () { orb.remove(); }, 400);
@@ -158,6 +180,7 @@ feedBtn.addEventListener('click', function () {
   if (Date.now() < feedReadyAt) return;
   ZahlCore.feed(state, 25, Date.now());
   renderer.trigger('fed');
+  audio.play('fed');
   feedReadyAt = Date.now() + FEED_COOLDOWN_MS;
   refreshUI();
   saveState();
@@ -166,6 +189,7 @@ feedBtn.addEventListener('click', function () {
 document.getElementById('petBtn').addEventListener('click', function () {
   ZahlCore.pet(state);
   renderer.trigger('petted');
+  audio.play('petted');
   refreshUI();
   saveState();
 });
@@ -180,6 +204,7 @@ document.querySelectorAll('.ritual-btn').forEach(function (btn) {
       return;
     }
     renderer.trigger('ritual');
+    audio.play('ritual');
     var hint = ZahlCore.ritualEffectHint(type);
     if (hint.burst) spawnBurst(hint.burst, hint.staggerMs || 500);
     if (hint.ghost) renderer.trigger('ghost');
@@ -192,7 +217,10 @@ document.querySelectorAll('.ritual-btn').forEach(function (btn) {
 var lastGhostPulse = 0;
 setInterval(function () {
   var now = Date.now();
-  ZahlCore.update(state, now);
+  var updateResult = ZahlCore.update(state, now);
+  if (updateResult.leveledDown) { renderer.trigger('devolve'); audio.play('devolve'); }
+  if (state.feralMode && !wasFeral) audio.play('feral');
+  wasFeral = state.feralMode;
   if (state.ritualActive && state.activeRitual === 2 && now - lastGhostPulse > 8000) {
     renderer.trigger('ghost');
     lastGhostPulse = now;

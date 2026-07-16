@@ -41,6 +41,15 @@ var renderer = ZahlRender.create(canvas);
 renderer.playSplash(26);
 renderer.start();
 
+var audio = ZahlAudio.create();
+var AUDIO_PREF_KEY = 'zahl-audio-enabled';
+try {
+  var audioPref = localStorage.getItem(AUDIO_PREF_KEY);
+  if (audioPref !== null) audio.setEnabled(audioPref === '1');
+} catch (e) { /* ignore */ }
+
+var wasFeral = state.feralMode;
+
 // ── gem hotspots — direct-select, no cycling menu. Each gem sculpted
 // into the shell art is one action; RITUAL and STATS open a small
 // readout over the screen instead of navigating away from it. ────────
@@ -67,6 +76,7 @@ function renderRitualSubmenu() {
       var ok = ZahlCore.performRitual(state, type, Date.now());
       if (ok) {
         renderer.trigger('ritual');
+        audio.play('ritual');
         var hint = ZahlCore.ritualEffectHint(type);
         if (hint.ghost) renderer.trigger('ghost');
         flashScreen();
@@ -83,6 +93,7 @@ function renderRitualSubmenu() {
 function renderStatsSubmenu() {
   submenuEl.innerHTML =
     '<h4>STATS</h4>' +
+    '<div class="sm-row" id="smSoundToggle"><span class="sm-name">SOUND</span><span class="sm-meta">' + (audio.isEnabled() ? 'ON' : 'OFF') + '</span></div>' +
     '<div class="sm-row"><span class="sm-name">HUNGER</span><span class="sm-meta">' + state.hunger + '%</span></div>' +
     '<div class="sm-row"><span class="sm-name">CORROSION</span><span class="sm-meta">' + state.corrosion + '%</span></div>' +
     '<div class="sm-row"><span class="sm-name">ENTROPY</span><span class="sm-meta">' + state.entropy + '%</span></div>' +
@@ -90,6 +101,11 @@ function renderStatsSubmenu() {
     '<div class="sm-row"><span class="sm-name">EXP</span><span class="sm-meta">' + state.experience + '/100</span></div>' +
     '<div class="sm-row"><span class="sm-name">LEVEL</span><span class="sm-meta">' + state.level + '/10 ' + (ZahlCore.STAGE_NAMES[state.level] || '') + '</span></div>' +
     '<div class="sm-row"><span class="sm-name">SOULS TOTAL</span><span class="sm-meta">' + state.soulsTotal + '</span></div>';
+  document.getElementById('smSoundToggle').addEventListener('click', function () {
+    audio.setEnabled(!audio.isEnabled());
+    try { localStorage.setItem(AUDIO_PREF_KEY, audio.isEnabled() ? '1' : '0'); } catch (e) { /* ignore */ }
+    renderStatsSubmenu();
+  });
 }
 
 function openSubmenu(mode) {
@@ -112,6 +128,7 @@ function toggleSubmenu(mode) {
 document.getElementById('hsFeed').addEventListener('click', function () {
   ZahlCore.feed(state, 25, Date.now());
   renderer.trigger('fed');
+  audio.play('fed');
   flashScreen();
   saveState();
 });
@@ -119,6 +136,7 @@ document.getElementById('hsFeed').addEventListener('click', function () {
 document.getElementById('hsPet').addEventListener('click', function () {
   ZahlCore.pet(state);
   renderer.trigger('petted');
+  audio.play('petted');
   flashScreen();
   saveState();
 });
@@ -128,8 +146,11 @@ document.getElementById('hsStats').addEventListener('click', function () { toggl
 
 document.getElementById('hsClose').addEventListener('click', function () {
   saveState();
-  if (ipcRenderer) ipcRenderer.send('quit-app');
-  else window.close();
+  audio.play('close');
+  setTimeout(function () {
+    if (ipcRenderer) ipcRenderer.send('quit-app');
+    else window.close();
+  }, 140);
 });
 
 // the "W" badge already sculpted into the loop doubles as the desktop-mode
@@ -151,6 +172,7 @@ document.querySelector('.screen-overlay').addEventListener('click', function (e)
   if (uiMode !== 'idle') return;
   ZahlCore.pet(state);
   renderer.trigger('petted');
+  audio.play('petted');
   flashScreen();
   saveState();
 });
@@ -212,8 +234,10 @@ var nextAmbientSoulAt = Date.now() + 60000 + Math.random() * 60000;
 
 function maybeAmbientSoul(now) {
   if (now < nextAmbientSoulAt) return;
-  ZahlCore.catchSoul(state, now);
+  var result = ZahlCore.catchSoul(state, now);
   renderer.trigger('soulcap');
+  audio.play('soulcap');
+  if (result.leveledUp) { renderer.trigger('levelup'); audio.play('levelup'); }
   nextAmbientSoulAt = now + 60000 + Math.random() * 120000;
 }
 
@@ -221,7 +245,10 @@ function maybeAmbientSoul(now) {
 var lastGhostPulse = 0;
 setInterval(function () {
   var now = Date.now();
-  ZahlCore.update(state, now);
+  var updateResult = ZahlCore.update(state, now);
+  if (updateResult.leveledDown) { renderer.trigger('devolve'); audio.play('devolve'); }
+  if (state.feralMode && !wasFeral) audio.play('feral');
+  wasFeral = state.feralMode;
   maybeAmbientSoul(now);
   if (state.ritualActive && state.activeRitual === 2 && now - lastGhostPulse > 8000) {
     renderer.trigger('ghost');
