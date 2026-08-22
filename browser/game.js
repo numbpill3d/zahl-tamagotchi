@@ -58,10 +58,13 @@ var whispers = [
 
 function setMistress(text, revertMs) {
   var el = document.getElementById('mistress');
-  el.textContent = text;
+  var message = text.replace(/^MISTRESS DRATHA:\s*/, '');
+  var messageEl = el.querySelector('p');
+  if (messageEl) messageEl.textContent = message;
   if (revertMs) {
     setTimeout(function () {
-      el.textContent = whispers[Math.floor(Math.random() * whispers.length)];
+      var next = whispers[Math.floor(Math.random() * whispers.length)].replace(/^MISTRESS DRATHA:\s*/, '');
+      if (messageEl) messageEl.textContent = next;
     }, revertMs);
   }
 }
@@ -93,6 +96,7 @@ function refreshUI() {
   document.getElementById('mood').textContent = ZahlCore.moodLabel(state);
   document.getElementById('mood').style.color = state.feralMode ? '#f00' : (state.hunger < 20 ? '#f66' : state.hunger > 80 ? '#4f4' : '#f90');
   document.getElementById('stageLabel').textContent = ZahlCore.STAGE_NAMES[state.level] || '?';
+  document.body.classList.toggle('is-feral', state.feralMode);
 
   var ritualEl = document.getElementById('ritualActive');
   if (state.ritualActive) {
@@ -103,6 +107,12 @@ function refreshUI() {
   }
   document.querySelector('.ritual-panel').classList.toggle('ritual-active-glow', state.ritualActive);
   document.querySelector('.ritual-btn[data-ritual="3"]').classList.toggle('active-toggle', state.portalActive);
+  document.querySelectorAll('.ritual-btn').forEach(function (btn) {
+    var ritualType = parseInt(btn.dataset.ritual, 10);
+    var affordable = state.soulBalance >= ZahlCore.RITUAL_COSTS[ritualType];
+    btn.classList.toggle('unaffordable', !affordable && !(ritualType === 3 && state.portalActive));
+    btn.setAttribute('aria-disabled', affordable || (ritualType === 3 && state.portalActive) ? 'false' : 'true');
+  });
 
   renderer.setStats({
     hunger: state.hunger, level: state.level, corrosion: state.corrosion,
@@ -116,11 +126,23 @@ function refreshUI() {
 function renderSoulList() {
   var list = document.getElementById('soulList');
   list.innerHTML = '';
+  if (!state.soulLog.length) {
+    var empty = document.createElement('div');
+    empty.className = 'soul-entry-empty';
+    empty.textContent = 'No claims recorded — watch the chamber';
+    list.appendChild(empty);
+    return;
+  }
   state.soulLog.slice(0, 12).forEach(function (s) {
     var div = document.createElement('div');
     div.className = 'soul-entry';
     var ago = Math.max(0, Math.round((Date.now() - s.t) / 1000));
-    div.textContent = '> [' + s.type + ']  caught ' + ago + 's ago';
+    var type = document.createElement('span');
+    type.textContent = s.type;
+    var time = document.createElement('span');
+    time.textContent = ago + 's ago';
+    div.appendChild(type);
+    div.appendChild(time);
     list.appendChild(div);
   });
 }

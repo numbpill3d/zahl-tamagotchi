@@ -3,111 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ZAHL</title>
+<meta name="theme-color" content="#07050b">
+<title>ZAHL — Voidbound Familiar</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="ash-storm"></div>
-<div class="container">
-
-  <div class="header">
-    <h1>ZAHL</h1>
-    <div class="subtitle">a corroded spirit needs tending</div>
-    <button id="soundToggle" class="sound-toggle">SOUND: ON</button>
-  </div>
-
-  <div class="pet-display">
-    <div class="canvas-wrap" id="arena">
-      <canvas id="zahlCanvas" width="64" height="64"></canvas>
-      <div class="scanlines"></div>
-    </div>
-    <div id="mood">HUNGRY</div>
-    <div id="stageLabel">WRAITH</div>
-  </div>
-
-  <div class="stats">
-    <div class="stat">
-      <label>HUNGER</label>
-      <div class="bar"><div id="hungerBar" class="fill"></div></div>
-      <span id="hungerVal">0%</span>
-    </div>
-    <div class="stat">
-      <label>LEVEL</label>
-      <div class="bar"><div id="levelBar" class="fill"></div></div>
-      <span id="levelVal">1/10</span>
-    </div>
-    <div class="stat">
-      <label>CORROSION</label>
-      <div class="bar"><div id="corrosionBar" class="fill bar-corrosion"></div></div>
-      <span id="corrosionVal">0%</span>
-    </div>
-    <div class="stat">
-      <label>ENTROPY</label>
-      <div class="bar"><div id="entropyBar" class="fill bar-entropy"></div></div>
-      <span id="entropyVal">0%</span>
-    </div>
-    <div class="stat">
-      <label>CORRUPTION</label>
-      <div class="bar"><div id="corruptBar" class="fill bar-corrupt"></div></div>
-      <span id="corruptVal">0%</span>
-    </div>
-    <div class="stat">
-      <label>EXP</label>
-      <div class="bar"><div id="expBar" class="fill bar-exp"></div></div>
-      <span id="expVal">0/100</span>
-    </div>
-    <div class="stat souls-stat">
-      <label>SOULS</label>
-      <span id="soulBal" class="soul-count">0</span>
-      <span class="soul-label">balance</span>
-      <span id="soulTotal" class="soul-total">/ 0 total</span>
-    </div>
-  </div>
-
-  <div class="actions">
-    <button id="feedBtn">FEED</button>
-    <button id="petBtn">PET</button>
-  </div>
-
-  <div class="panel ritual-panel">
-    <h3>RITUALS <span id="ritualActive" class="ritual-active"></span></h3>
-    <div class="ritual-grid">
-      <button class="ritual-btn" data-ritual="0">
-        <span class="r-name">CHANNEL BURST</span>
-        <span class="r-cost">5 souls · 30s · faster souls</span>
-      </button>
-      <button class="ritual-btn" data-ritual="1">
-        <span class="r-name">BEACON STORM</span>
-        <span class="r-cost">8 souls · soul rain</span>
-      </button>
-      <button class="ritual-btn" data-ritual="2">
-        <span class="r-name">HAUNT</span>
-        <span class="r-cost">12 souls · 60s · summon ghost</span>
-      </button>
-      <button class="ritual-btn" data-ritual="3">
-        <span class="r-name">SUMMON PORTAL</span>
-        <span class="r-cost">15 souls · toggle</span>
-      </button>
-      <button class="ritual-btn" data-ritual="4">
-        <span class="r-name">PACKET STORM</span>
-        <span class="r-cost">10 souls · soul burst</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h3>SOUL LEDGER</h3>
-    <div id="soulList" class="soul-list"></div>
-  </div>
-
-  <div class="howto">
-    <p>souls drift across the void — click them before they fade. spend souls on rituals. feed and pet Zahl to keep hunger and corrosion in check, or it goes feral.</p>
-  </div>
-
+<div class="void-field" aria-hidden="true">
+  <div class="void-halo halo-one"></div>
+  <div class="void-halo halo-two"></div>
+  <div class="ash-storm"></div>
 </div>
 
-<div id="mistress">MISTRESS DRATHA: "Feed the beast or lose your stack."</div>
+<main class="container">
+  <header class="header">
+    <div class="brand-lockup">
+      <span class="eyebrow">VOID FAMILIAR // SPECIMEN 01</span>
+      <h1 data-text="ZAHL">ZAHL</h1>
+      <p class="subtitle">a corroded spirit needs tending</p>
+    </div>
+    <div class="header-status">
+      <span class="live-mark"><i></i> BOUND</span>
+      <button id="soundToggle" class="sound-toggle" type="button">SOUND: ON</button>
+    </div>
+  </header>
+
+  <section class="command-deck" aria-label="Familiar chamber and vital signs">
+    <div class="familiar-column">
+      <div class="section-kicker"><span>01</span> CONTAINMENT CHAMBER</div>
+
+      <div class="pet-display">
+        <div class="sigil-stage">
+          <div class="frame-screen" aria-hidden="true"></div>
+          <div class="canvas-wrap" id="arena">
+            <canvas id="zahlCanvas" width="64" height="64" aria-label="Animated pixel-art familiar Zahl"></canvas>
+            <div class="scanlines" aria-hidden="true"></div>
+            <div class="canvas-vignette" aria-hidden="true"></div>
+          </div>
+          <img class="containment-frame" src="assets/zahl-containment-frame.png" alt="" aria-hidden="true">
+          <span class="frame-designation" aria-hidden="true">VOIDBOUND // VESSEL I</span>
+        </div>
+
+        <div class="identity-plate">
+          <div>
+            <span class="plate-label">CURRENT STATE</span>
+            <strong id="mood">HUNGRY</strong>
+          </div>
+          <div class="stage-readout">
+            <span class="plate-label">EVOLUTION</span>
+            <strong id="stageLabel">WRAITH</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions" aria-label="Care actions">
+        <button id="feedBtn" class="primary-action" type="button">
+          <span class="action-glyph" aria-hidden="true">◆</span>
+          <span><b>FEED</b><small>restore hunger</small></span>
+        </button>
+        <button id="petBtn" class="primary-action" type="button">
+          <span class="action-glyph" aria-hidden="true">✣</span>
+          <span><b>PET</b><small>calm corrosion</small></span>
+        </button>
+      </div>
+    </div>
+
+    <aside class="vitals-column">
+      <div class="section-kicker"><span>02</span> VITAL SIGNS</div>
+      <div class="stats">
+        <div class="stat stat-hunger">
+          <div class="stat-meta"><label>HUNGER</label><span id="hungerVal">0%</span></div>
+          <div class="bar"><div id="hungerBar" class="fill"></div></div>
+        </div>
+        <div class="stat stat-level">
+          <div class="stat-meta"><label>LEVEL</label><span id="levelVal">1/10</span></div>
+          <div class="bar"><div id="levelBar" class="fill"></div></div>
+        </div>
+        <div class="stat stat-corrosion">
+          <div class="stat-meta"><label>CORROSION</label><span id="corrosionVal">0%</span></div>
+          <div class="bar"><div id="corrosionBar" class="fill"></div></div>
+        </div>
+        <div class="stat stat-entropy">
+          <div class="stat-meta"><label>ENTROPY</label><span id="entropyVal">0%</span></div>
+          <div class="bar"><div id="entropyBar" class="fill"></div></div>
+        </div>
+        <div class="stat stat-corruption">
+          <div class="stat-meta"><label>CORRUPTION</label><span id="corruptVal">0%</span></div>
+          <div class="bar"><div id="corruptBar" class="fill"></div></div>
+        </div>
+        <div class="stat stat-exp">
+          <div class="stat-meta"><label>EXPERIENCE</label><span id="expVal">0/100</span></div>
+          <div class="bar"><div id="expBar" class="fill"></div></div>
+        </div>
+      </div>
+
+      <div class="soul-vault">
+        <div class="soul-icon" aria-hidden="true"><span></span></div>
+        <div class="soul-copy">
+          <span class="plate-label">SOUL VAULT</span>
+          <div><strong id="soulBal" class="soul-count">0</strong><span class="soul-label">AVAILABLE</span></div>
+          <span id="soulTotal" class="soul-total">/ 0 total claimed</span>
+        </div>
+      </div>
+
+      <div id="mistress" class="oracle-message" role="status" aria-live="polite">
+        <span class="oracle-label">MISTRESS DRATHA // TRANSMISSION</span>
+        <p>“Feed the beast or lose your stack.”</p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="panel ritual-panel">
+    <div class="panel-heading">
+      <div>
+        <div class="section-kicker"><span>03</span> RITUAL ARRAY</div>
+        <h2>Invoke the void</h2>
+      </div>
+      <span id="ritualActive" class="ritual-active"></span>
+    </div>
+    <div class="ritual-grid">
+      <button class="ritual-btn" data-ritual="0" type="button">
+        <span class="ritual-index">I</span>
+        <span class="ritual-copy"><b class="r-name">CHANNEL BURST</b><small class="r-cost">5 souls · 30s</small><em>Accelerate soul drift</em></span>
+      </button>
+      <button class="ritual-btn" data-ritual="1" type="button">
+        <span class="ritual-index">II</span>
+        <span class="ritual-copy"><b class="r-name">BEACON STORM</b><small class="r-cost">8 souls · instant</small><em>Call down a soul rain</em></span>
+      </button>
+      <button class="ritual-btn" data-ritual="2" type="button">
+        <span class="ritual-index">III</span>
+        <span class="ritual-copy"><b class="r-name">HAUNT</b><small class="r-cost">12 souls · 60s</small><em>Summon a pale echo</em></span>
+      </button>
+      <button class="ritual-btn" data-ritual="3" type="button">
+        <span class="ritual-index">IV</span>
+        <span class="ritual-copy"><b class="r-name">SUMMON PORTAL</b><small class="r-cost">15 souls · toggle</small><em>Tear open the veil</em></span>
+      </button>
+      <button class="ritual-btn" data-ritual="4" type="button">
+        <span class="ritual-index">V</span>
+        <span class="ritual-copy"><b class="r-name">PACKET STORM</b><small class="r-cost">10 souls · instant</small><em>Fracture the signal</em></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="lower-deck">
+    <div class="panel ledger-panel">
+      <div class="panel-heading compact">
+        <div>
+          <div class="section-kicker"><span>04</span> SOUL LEDGER</div>
+          <h2>Recent claims</h2>
+        </div>
+        <span class="ledger-status">LIVE FEED</span>
+      </div>
+      <div id="soulList" class="soul-list"></div>
+    </div>
+
+    <aside class="field-manual">
+      <span class="section-kicker"><span>05</span> BINDING NOTES</span>
+      <p>Souls drift through the chamber. Claim them before they fade, then spend them on rituals.</p>
+      <p>Feed and pet Zahl to keep hunger and corrosion in check. Neglect awakens the feral state.</p>
+      <span class="manual-seal" aria-hidden="true">Z</span>
+    </aside>
+  </section>
+
+  <footer class="footer">
+    <span>ZAHL // VOIDBOUND FAMILIAR</span>
+    <span>LOCAL SAVE <i></i> ACTIVE</span>
+  </footer>
+</main>
 
 <script src="core/zahl-core.js"></script>
 <script src="core/zahl-render.js"></script>

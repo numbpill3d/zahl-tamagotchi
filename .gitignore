@@ -4,3 +4,7 @@ release/
 browser/core/
 desktop/core/
 *.log
+.env
+.env.*
+.DS_Store
+*.tmp
