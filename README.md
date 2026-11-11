@@ -1,6 +1,9 @@
 # ZAHL
 
 A demonic tamagotchi. Feed it, pet it, catch drifting souls, spend them on
+
+![ZAHL browser gameplay](press/browser-gameplay.png)
+
 rituals — neglect it and it goes feral, then devolves. Pet logic and pixel
 art are ported from [grimwalker](https://github.com/numbpill3d/grimwalker)'s
 `zahl_pet.cpp` and its canvas sprite renderer; the WiFi-hardware actions
